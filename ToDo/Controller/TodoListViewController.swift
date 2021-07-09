@@ -15,7 +15,6 @@ class ToDoListViewController: UITableViewController {
         super.viewDidLoad()
         loadItem()
     }
-    
     func loadItem(){
         db.collection("ItemToDo").order(by: "Timesended").addSnapshotListener { (querySnapshot, err) in
             self.itemArray = []
@@ -25,13 +24,14 @@ class ToDoListViewController: UITableViewController {
                 if let snapshotDocuments = querySnapshot?.documents{
                     for doc in snapshotDocuments{
                         let data = doc.data()
-                        if let title = data["Remind"] as? String,let check = data["Checked"] as? Bool {
-                            let newItem = Item(title: title, checked: check)
+                        if let title = data["Remind"] as? String,let check = data["Checked"] as? Bool,let id = data["id"] as? String {
+                            let newItem = Item(title: title, checked: check, id: id)
                             self.itemArray.append(newItem)
                             DispatchQueue.main.async {
                                 self.tableView.reloadData()
                                 let indexPath = IndexPath(row: self.itemArray.count - 1 , section: 0)
                                 self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                                print(self.itemArray)
                             }
                         }
                     }
@@ -53,9 +53,19 @@ class ToDoListViewController: UITableViewController {
         return cell
     }
     
-//Mark :TableView Delegate method
+    //Mark :TableView Delegate method
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        itemArray[indexPath.row].checked = !itemArray[indexPath.row].checked
+        
+        
+        let newData = db.collection("ItemToDo").document(itemArray[indexPath.row].id)
+        if itemArray[indexPath.row].checked == true{
+            newData.updateData(["Checked":false])
+        }else{
+            newData.updateData(["Checked":true])
+        }
+        
+        
+        //        itemArray[indexPath.row].checked = !itemArray[indexPath.row].checked
         self.tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -78,14 +88,26 @@ class ToDoListViewController: UITableViewController {
     }
     
     func addItem(_ item:String){
-        let userData = db.collection("ItemToDo").addDocument(data:
-        ["Remind":item,
-         "Timesended":Date().timeIntervalSince1970,
-         "Checked":false]
-        )
+        let ref = db.collection("ItemToDo").addDocument(data:
+                                                            ["Remind":item,
+                                                             "Timesended":Date().timeIntervalSince1970,
+                                                             "Checked":false
+                                                            ])
+        let newData = db.collection("ItemToDo").document("\(ref.documentID)")
+        newData.updateData(["id" : ref.documentID])
+    }
+    
+    func deleteItem()  {
+        db.collection("ItemToDo").document("D9XWOpcnMFt2OpaV0D5d").delete() { err in
+            if let err = err {
+                print("Error removing document: \(err)")
+            } else {
+                print("Document successfully removed!")
+            }
+        }
     }
 }
-    
+
 
 
 
