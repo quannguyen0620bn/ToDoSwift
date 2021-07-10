@@ -218,7 +218,6 @@ PODS:
   - BoringSSL-GRPC/Implementation (0.0.7):
     - BoringSSL-GRPC/Interface (= 0.0.7)
   - BoringSSL-GRPC/Interface (0.0.7)
-  - CLTypingLabel (0.4.0)
   - Firebase/Auth (8.2.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 8.2.0)
@@ -304,17 +303,17 @@ PODS:
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
   - PromisesObjC (1.2.12)
+  - SwipeCellKit (2.7.1)
 
 DEPENDENCIES:
-  - CLTypingLabel
   - Firebase/Auth
   - Firebase/Firestore
+  - SwipeCellKit
 
 SPEC REPOS:
   trunk:
     - abseil
     - BoringSSL-GRPC
-    - CLTypingLabel
     - Firebase
     - FirebaseAuth
     - FirebaseCore
@@ -328,11 +327,11 @@ SPEC REPOS:
     - leveldb-library
     - nanopb
     - PromisesObjC
+    - SwipeCellKit
 
 SPEC CHECKSUMS:
   abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
-  CLTypingLabel: 95a7d1faf7e3d1d952cd11cb0491d17d80c50934
   Firebase: 12c568897b807321964e89d2b263ef4c6cff3db6
   FirebaseAuth: 4c4fb0ba1a169f3acb4aa5b724f7ae7c0999ee44
   FirebaseCore: 3a83f24c3de69ec9f9a426e2598125ea51f3a2ce
@@ -346,7 +345,8 @@ SPEC CHECKSUMS:
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
+  SwipeCellKit: 3972254a826da74609926daf59b08d6c72e619ea
 
-PODFILE CHECKSUM: 84c0f7f5aa7b0fe9399679c0807bbeff6a34d95a
+PODFILE CHECKSUM: 651a70d54a5ed8ddcbbedf9293a44194a39d804b
 
 COCOAPODS: 1.10.1

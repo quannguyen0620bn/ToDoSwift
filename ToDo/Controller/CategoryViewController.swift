@@ -7,7 +7,10 @@
 
 import UIKit
 import Firebase
-class CategoryViewController: UITableViewController {
+import SwipeCellKit
+
+
+class CategoryViewController: UITableViewController{
     var db = Firestore.firestore()
     var categoryArray = [Category]()
     override func viewDidLoad() {
@@ -45,7 +48,8 @@ class CategoryViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier:"CategoryCell", for: indexPath)
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier:"CategoryCell", for: indexPath) as! SwipeTableViewCell
         let category1 = categoryArray[indexPath.row]
         cell.textLabel?.text = category1.Name
         return cell

@@ -7,6 +7,7 @@
 
 import UIKit
 import Firebase
+import SwipeCellKit
 
 class ToDoListViewController: UITableViewController,UISearchBarDelegate{
     let db = Firestore.firestore()
@@ -14,6 +15,8 @@ class ToDoListViewController: UITableViewController,UISearchBarDelegate{
     override func viewDidLoad() {
         super.viewDidLoad()
         loadItem()
+        tableView.rowHeight = 80.0
+        
     }
     func loadItem(){
         db.collection("ItemToDo").order(by: "Timesended").addSnapshotListener { (querySnapshot, err) in
@@ -29,7 +32,7 @@ class ToDoListViewController: UITableViewController,UISearchBarDelegate{
                             self.itemArray.append(newItem)
                             DispatchQueue.main.async {
                                 self.tableView.reloadData()
-                                let indexPath = IndexPath(row: self.itemArray.count - 1 , section: 0)
+                                let indexPath = IndexPath(row: snapshotDocuments.count - 1, section: 0)
                                 self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
                             }
                         }
@@ -37,15 +40,18 @@ class ToDoListViewController: UITableViewController,UISearchBarDelegate{
                 }
             }
         }
+        
     }
     
     
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemArray.count
+            return itemArray.count
+          
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath) as! SwipeTableViewCell
+        cell.delegate = self
         let item = itemArray[indexPath.row]
         cell.textLabel?.text = item.title
         cell.accessoryType = item.checked ? .checkmark : .none
@@ -54,18 +60,22 @@ class ToDoListViewController: UITableViewController,UISearchBarDelegate{
     
     //Mark :TableView Delegate method
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        
-        let newData = db.collection("ItemToDo").document(itemArray[indexPath.row].id)
+        let newData = db.collection("ItemToDo").document(itemArray[indexPath.row ].id)
         if itemArray[indexPath.row].checked == true{
             newData.updateData(["Checked":false])
         }else{
             newData.updateData(["Checked":true])
         }
+        print(indexPath.row)
         self.tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
         
     }
+    
+    
+    
+    
+    
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var textField = UITextField()
@@ -96,7 +106,6 @@ class ToDoListViewController: UITableViewController,UISearchBarDelegate{
     }
     
     func deleteItem(_ id:String)  {
-        
         db.collection("ItemToDo").document(id).delete() { err in
             if let err = err {
                 print("Error removing document: \(err)")
@@ -104,8 +113,10 @@ class ToDoListViewController: UITableViewController,UISearchBarDelegate{
                 print("Document successfully removed!")
             }
         }
-        tableView.reloadData()
-    }
+        if itemArray.count == 0{
+            itemArray = []
+        }
+        }
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         db.collection("ItemToDo").whereField("Remind", isEqualTo:searchBar.text! ).getDocuments() { (querySnapshot, err) in
             if let err = err {
@@ -139,7 +150,29 @@ class ToDoListViewController: UITableViewController,UISearchBarDelegate{
             
         }
     }
-    
-    
-    
 }
+
+//MARK: - SwipeCellDelegate
+
+extension ToDoListViewController:SwipeTableViewCellDelegate{
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
+        guard orientation == .right else { return nil }
+
+        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
+            
+            self.deleteItem(self.itemArray[indexPath.row].id)
+            if indexPath.row  == 0{
+                self.itemArray.remove(at: indexPath.row)
+                tableView.deleteRows(at: [indexPath], with: .right)
+                tableView.endEditing(true)
+            }
+            
+        }
+        // customize the action appearance
+        deleteAction.image = UIImage(named: "Trash-icon")
+        return [deleteAction]
+    }
+}
+    
+
+
