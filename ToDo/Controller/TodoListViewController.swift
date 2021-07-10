@@ -8,7 +8,7 @@
 import UIKit
 import Firebase
 
-class ToDoListViewController: UITableViewController {
+class ToDoListViewController: UITableViewController,UISearchBarDelegate{
     let db = Firestore.firestore()
     var itemArray = [Item]()
     override func viewDidLoad() {
@@ -31,7 +31,6 @@ class ToDoListViewController: UITableViewController {
                                 self.tableView.reloadData()
                                 let indexPath = IndexPath(row: self.itemArray.count - 1 , section: 0)
                                 self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
-                                print(self.itemArray)
                             }
                         }
                     }
@@ -63,9 +62,6 @@ class ToDoListViewController: UITableViewController {
         }else{
             newData.updateData(["Checked":true])
         }
-        
-        
-        //        itemArray[indexPath.row].checked = !itemArray[indexPath.row].checked
         self.tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -87,6 +83,8 @@ class ToDoListViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    
+    
     func addItem(_ item:String){
         let ref = db.collection("ItemToDo").addDocument(data:
                                                             ["Remind":item,
@@ -97,18 +95,51 @@ class ToDoListViewController: UITableViewController {
         newData.updateData(["id" : ref.documentID])
     }
     
-    func deleteItem()  {
-        db.collection("ItemToDo").document("D9XWOpcnMFt2OpaV0D5d").delete() { err in
+    func deleteItem(_ id:String)  {
+        
+        db.collection("ItemToDo").document(id).delete() { err in
             if let err = err {
                 print("Error removing document: \(err)")
             } else {
                 print("Document successfully removed!")
             }
         }
+        tableView.reloadData()
     }
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        db.collection("ItemToDo").whereField("Remind", isEqualTo:searchBar.text! ).getDocuments() { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
+            } else {
+                self.itemArray = []
+                for document in querySnapshot!.documents {
+                    print("\(document.documentID) => \(document.data())")
+                    let data = document.data()
+                    if let title = data["Remind"] as? String,let check = data["Checked"] as? Bool,let id = data["id"] as? String {
+                        let newItem = Item(title: title, checked: check, id: id)
+                        self.itemArray.append(newItem)
+                        DispatchQueue.main.async {
+                            self.tableView.reloadData()
+                            let indexPath = IndexPath(row: self.itemArray.count-1  , section: 0)
+                            self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0{
+            loadItem()
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+            
+            
+        }
+    }
+    
+    
+    
 }
-
-
-
-
-
