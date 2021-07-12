@@ -9,7 +9,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Item-->
+        <!--Việc cần làm-->
         <scene sceneID="hFc-el-AZg">
             <objects>
                 <tableViewController id="FkA-A2-Re5" customClass="ToDoListViewController" customModule="ToDo" customModuleProvider="target" sceneMemberID="viewController">
@@ -40,7 +40,7 @@
                             <outlet property="delegate" destination="FkA-A2-Re5" id="Dki-fU-fih"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Item" id="OLZ-TR-QSn">
+                    <navigationItem key="navigationItem" title="Việc cần làm" id="OLZ-TR-QSn">
                         <barButtonItem key="leftBarButtonItem" title="Logout" id="BqA-4V-8UX">
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <connections>
